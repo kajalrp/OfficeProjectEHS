@@ -1,0 +1,337 @@
+*************SELLER.BL*************
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using EHS.Exceptions;
+
+namespace EHS.BusinessLayer
+{
+    public class SellerBL
+    {
+        Training_24Oct18_PuneEntities sellerDbContext = null;
+
+        public SellerBL()
+        {
+            sellerDbContext = new Training_24Oct18_PuneEntities();
+        }
+        //Doing Validatioon
+        public static bool ValidateSeller(Seller seller)
+        {
+
+            StringBuilder objSB = new StringBuilder();
+            bool validateSeller = true;
+
+            if (seller.FirstName == string.Empty)
+            {
+                validateSeller = false;
+                objSB.Append(Environment.NewLine + "First Name Required");
+
+            }
+            if (seller.LastName == string.Empty)
+            {
+                validateSeller = false;
+                objSB.Append(Environment.NewLine + "Last Name Required");
+
+            }
+            string strEMail = seller.EmailId;
+            Regex regx = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regx.Match(strEMail);
+            if (!match.Success)
+            {
+                validateSeller = false;
+                objSB.Append(Environment.NewLine + "EMail ID not Correct");
+
+            }
+
+            if (seller.PhoneNo.ToString().Length != 10)
+            {
+                validateSeller = false;
+                objSB.Append(Environment.NewLine + "Phone Number not Correct");
+
+            }
+            if (seller.Address == string.Empty)
+            {
+                validateSeller = false;
+                objSB.Append(Environment.NewLine + "Address Required");
+
+            }
+
+            if (validateSeller == false)
+            {
+                throw new EHSExceptionClass(objSB.ToString());
+            }
+
+            return validateSeller;
+
+        }
+
+        public bool AddSeller(Seller seller)
+        {
+            bool isAdd = false;
+            try
+            {
+                if (ValidateSeller(seller))
+                {
+                    sellerDbContext.Sellers.Add(seller);
+                    int i = sellerDbContext.SaveChanges();
+                    if (i > 0)
+                        isAdd = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return isAdd;
+        }
+
+
+
+public IEnumerable<State> ViewState()
+        {
+            IQueryable<State> stateList;
+            #region Linq query
+            try
+            {
+
+
+                stateList = from statesObj in sellerDbContext.States
+                            select statesObj;
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return stateList;
+        }
+
+        public int getStateId(string stateName1)
+        {
+            State stateObj;
+            List<State> stateList = sellerDbContext.States.ToList();
+            try
+            {
+                #region
+                stateObj = stateList.SingleOrDefault(st=>st.StateName == stateName1);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return stateObj.StateId;
+        }
+        public IEnumerable<City> ViewCity()
+        {
+            IQueryable<City> cityList;
+            #region Linq query
+            try
+            {
+
+
+                cityList = from citiesObj in sellerDbContext.Cities
+                           
+                           select citiesObj;
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return cityList;
+        }
+        public int getCityId(string cityName1)
+        {
+            City cityObj;
+            List<City> cityList = sellerDbContext.Cities.ToList();
+            try
+            {
+                #region
+                cityObj = cityList.SingleOrDefault(st => st.CityName == cityName1);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return cityObj.CityId;
+        }
+
+    }
+}
+
+**************SELLER.XAML.CS**********
+/*
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using EHS.BusinessLayer;
+
+namespace EasyHousingSolution
+{
+    /// <summary>
+    /// Interaction logic for SellerRegistration.xaml
+    /// </summary>
+    public partial class SellerRegistration : Window
+    {
+        SellerBL sellBL = new SellerBL();
+        public SellerRegistration()
+        {
+            InitializeComponent();
+            cmbSellerState.ItemsSource = sellBL.ViewState().ToList();
+            cmbSellerState.DisplayMemberPath = "StateName";
+            cmbSellerCity.ItemsSource = sellBL.ViewCity().ToList();
+            cmbSellerCity.DisplayMemberPath = "CityName";
+           
+        }
+        
+        Seller seller = new Seller();
+        State state = new State();
+        City city = new City();
+
+        private void BtnSellerRegister_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Add();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        public void Add()
+        {
+            try
+            {
+                //presentation layer data.
+                seller.UserName = txtSellerName.Text;
+                seller.FirstName = txtSellerFirstName.Text;
+                seller.LastName = txtSellerLastName.Text;
+                seller.PhoneNo = txtSellerPhoneNum.Text;
+                seller.DateofBirth = Convert.ToDateTime(dateSellerBirth.Text);
+                seller.EmailId = txtSellerEmail.Text;
+                seller.StateId = sellBL.getStateId(cmbSellerState.SelectedItem.ToString());
+                seller.CityId = sellBL.getCityId(cmbSellerCity.SelectedItem.ToString());
+
+                //
+                bool status = sellBL.AddSeller(seller);
+                if (status)
+                {
+                    MessageBox.Show("Congratulations!!!" +
+                        "You are our new Seller");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
+
+    }
+}*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using EHS.BusinessLayer;
+
+namespace EasyHousingSolution
+{
+    /// <summary>
+    /// Interaction logic for SellerRegistration.xaml
+    /// </summary>
+    public partial class SellerRegistration : Window
+    {
+        public SellerRegistration()
+        {
+            InitializeComponent();
+            cmbSellerState.ItemsSource = sellerBL.ViewState().ToList();
+            cmbSellerState.DisplayMemberPath = "StateName";
+            cmbSellerCity.ItemsSource = sellerBL.ViewCity().ToList();
+            cmbSellerCity.DisplayMemberPath = "CityName";
+        }
+        SellerBL sellerBL = new SellerBL();
+        Seller seller = new Seller();
+        State state = new State();
+        City city = new City();
+
+        private void BtnSellerRegister_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Add();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        public void Add()
+        {
+            try
+            {
+
+                //presentation layer data.
+                seller.UserName = txtSellerName.Text;
+                seller.FirstName = txtSellerFirstName.Text;
+                seller.LastName = txtSellerLastName.Text;
+                seller.PhoneNo = txtSellerPhoneNum.Text;
+                seller.DateofBirth = Convert.ToDateTime(dateSellerBirth.Text);
+                seller.EmailId = txtSellerEmail.Text;
+                seller.Address = txtSellerAddress.Text;
+                State st =(State)cmbSellerState.SelectedValue;
+                seller.StateId = sellerBL.getStateId(st.StateName);
+                City ct = (City)cmbSellerCity.SelectedValue;
+                seller.CityId = sellerBL.getCityId(ct.CityName);
+
+
+                bool status = sellerBL.AddSeller(seller);
+                if (status)
+                {
+                    MessageBox.Show("Congratulations!!!" +
+                        "You are our new Seller");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
+
+    }
+}
+
+
