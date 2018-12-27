@@ -1,0 +1,202 @@
+  <Grid Name="gridLoginMain">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" ></ColumnDefinition>
+                <ColumnDefinition Width="auto" ></ColumnDefinition>
+                <ColumnDefinition Width="auto" ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal"  Margin="20,20,20,25" Grid.RowSpan="2" Grid.ColumnSpan="2" Grid.Column="0" >
+                <Image Source="images/TMS-Logo.png" Height="70" Width="120" HorizontalAlignment="Center" Opacity="1"></Image>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal"  Margin="60,40,0,55" Grid.RowSpan="2" Grid.Column="2" >
+                <TextBlock TextAlignment="Center"   Text="Employee Login" FontSize="22" FontWeight="Bold" Foreground="Black"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0" >
+                <TextBlock TextAlignment="Left"  Text="User Id" FontSize="18" Margin="35,0,0,0" Padding="0,5,0,0"  FontWeight="DemiBold"></TextBlock>
+                <TextBlock TextAlignment="Left"  Text=":" FontSize="18" Margin="69,0,0,0" Padding="0,5,0,0"  FontWeight="Bold"></TextBlock>
+            </StackPanel>
+            <TextBox Name="txtUserID" Grid.Row="2" Grid.Column="2" FontSize="18" Margin="-50,11,47,0" Height="30" Width="250" Grid.ColumnSpan="2"/>
+
+            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0" >
+                <TextBlock TextAlignment="Left"  Text="Password" FontSize="18" Margin="35,0,0,0" Padding="0,5,0,0"  FontWeight="DemiBold"></TextBlock>
+                <TextBlock TextAlignment="Left"  Text=":" FontSize="18" Margin="50,0,0,0" Padding="0,5,0,0"  FontWeight="Bold"></TextBlock>
+            </StackPanel>
+            <PasswordBox Name="txtPassword" Grid.Row="3" Grid.Column="2" FontSize="18" Margin="-50,11,47,0" Height="30" Width="250" Grid.ColumnSpan="2"/>
+
+            <Button Background="#00000000" BorderThickness="0" Name="btnForgatePwd" Content="Forgot Password ?" FontSize="16" Foreground="MediumBlue" Grid.Row="4" Grid.Column="2" Margin="25,12,0,0" Height="25" Width="135" FontWeight="Medium" Click="BtnForgatePwd_Click">
+            </Button>
+
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" Width="420" Margin="-15 15 10 0" Grid.Column="2">
+                <Button Name="btnLogin" Style="{StaticResource btnStyle}"  Height="40" Width="130" Margin="33 10 0 10" FontSize="18" Content="Login" Click="BtnLogin_Click" ></Button>
+                <Button Name="btnCancel" Style="{StaticResource btnStyle}"  Height="40" Width="110" Margin="40 10 70 10" HorizontalContentAlignment="Center" FontSize="18" Content="Cancel" Click="BtnCancel_Click"></Button>
+            </StackPanel>
+
+            <StackPanel Grid.Row="6" Grid.Column="2" Orientation="Horizontal" Margin="30 10 0 0" Width="auto">
+                <TextBlock FontSize="16" FontWeight="DemiBold" Width="auto" >New User ?</TextBlock>
+                <Button Background="#00000000" BorderThickness="0" Name="btnRegister" Content="Register here.." FontSize="16" Foreground="MediumBlue" Grid.Row="4" Grid.Column="2" Margin="5,0,0,0" Height="auto" Width="135" FontWeight="Medium" Click="BtnRegister_Click"/>
+            </StackPanel>
+
+
+
+        </Grid>
+
+
+
+
+
+
+
+
+
+*****************************************
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using TravelManagementSystem.BussinessLayer;
+using TravelManagementSystem.ExceptionClass;
+
+namespace PageNavigationApp
+{
+    /// <summary>
+    /// Interaction logic for LoginWindow.xaml
+    /// </summary>
+    public partial class LoginWindow : Window
+    {
+        EmployeeMasterBL empBL = new EmployeeMasterBL();
+       
+        public LoginWindow()
+        {
+            InitializeComponent();
+            
+        }
+
+        private bool IsAllValid()
+        {
+            bool isEmpValid = true;
+            StringBuilder sb = new StringBuilder(); //Initializing stringbuilder
+                                                    //logic for all emp validation fields.
+                                                    /* Validations for Null input */
+           string usrPwd = txtPassword.Password;
+
+            if (txtUserID.Text == null | txtUserID.Text == string.Empty | txtUserID.Text.Length < 1)
+            {
+                sb.Append(Environment.NewLine + "Please enter User Id!");
+                isEmpValid = false;
+            }
+
+            
+
+           if(string.IsNullOrEmpty(usrPwd))
+            {
+               sb.Append(Environment.NewLine + "Please enter Password!");
+                isEmpValid = false;
+            }
+           
+
+
+
+            if (isEmpValid == false)
+            {
+                throw new EmployeeExceptionClass(sb.ToString());
+            }
+            return isEmpValid;
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            txtPassword.Clear();
+            txtUserID.Text = string.Empty;
+            
+        }
+
+        private void BtnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (IsAllValid()) //Checking if input is not null
+            {
+
+                string usrName = txtUserID.Text;
+                string usrPwd = txtPassword.Password;
+               
+                    if (!string.IsNullOrEmpty(usrName) && !string.IsNullOrEmpty(usrPwd))
+                    {
+                        //code to Check user exists in database or not.
+                        if (empBL.EmpExistLogin(txtUserID.Text, txtPassword.Password))
+                        {
+                            empBL.GetEmpId(txtUserID.Text);
+                            MessageBoxResult result = MessageBox.Show("Login Successful!!!!", MessageBoxButton.OK.ToString());
+                            if (result == MessageBoxResult.OK)
+                            {
+                                this.Hide();
+                                MainWindow mainWindow = new MainWindow();
+                                mainWindow.Show();
+
+                            }
+                        }
+                        else
+                            MessageBox.Show("Invalid Userid or Password");
+
+                    }
+                }
+                }
+            catch(EmployeeExceptionClass ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            catch(Exception excp)
+            {
+                MessageBox.Show(excp.Message);
+            }
+            this.Close();
+        }
+
+        private void BtnForgatePwd_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            ForgatePassword forgatePassword = new ForgatePassword();
+            forgatePassword.Show();
+            this.Close();
+        }
+
+        private void BtnRegister_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            SignUp signUp = new SignUp();
+            signUp.Show();
+            this.Close();
+        }
+
+    }
+}
+*************************************
