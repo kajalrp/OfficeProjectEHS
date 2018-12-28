@@ -1,0 +1,144 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using ELibraryMgmtSystemBL.BusinessLayer;
+
+namespace ELibraryMgmtSys
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        UserDetailsBL UDetailsBL = new UserDetailsBL();
+        User_Details objUser = new User_Details();
+        string userType;
+        
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        public void Login()
+        {
+            string userName= txtUserName.Text;
+            string pass = txtPassword.Password;
+            ComboBoxItem typeItem = (ComboBoxItem)cmbUserType.SelectedItem;
+            userType = typeItem.Content.ToString();
+
+            bool status = UDetailsBL.Login(userName,pass,userType);
+            if (status)
+            {
+                MessageBox.Show("Login Successfully");
+            }
+            else
+            {
+                MessageBox.Show("Please check your UserId or Password or UserType again!!!");
+            }
+        }
+
+        private void btnLognIn_Click(object sender, RoutedEventArgs e)
+        {
+
+            Login();
+            if (userType == "Administrator"){
+
+            }
+            var DisciplineSearch = new DisciplineSearch();   //create your new form.
+            DisciplineSearch.Show();    //show the new form.
+            this.Close();   //only if you want to close the current form.
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void WaterMarkTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+    }
+}
+****************************
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ELibraryMgmtSystemException.Exception1;
+
+namespace ELibraryMgmtSystemBL.BusinessLayer
+{
+   public class UserDetailsBL
+    {
+        Training_24Oct18_PuneEntities UDdbContext = null;
+
+        public UserDetailsBL()
+        {
+            UDdbContext = new Training_24Oct18_PuneEntities();
+        }
+
+        //add user details
+        public bool AddUserDetails(User_Details objUser)
+        {
+            bool AddUD = false;
+            try
+            {
+                UDdbContext.User_Details.Add(objUser);
+                int i =  UDdbContext.SaveChanges();
+                if (i > 0)
+                {
+                    AddUD = true;
+                }
+            }
+            catch (ELibraryMgmtSysException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return AddUD;
+        }
+
+       //login user
+       public bool Login(string userID,string password,string usertype)
+        {
+            List<User_Details> userList = UDdbContext.User_Details.ToList();
+            bool loginUser = false;
+            try
+            {
+               foreach(var user in userList)
+                {
+                    if (user.Password == password && user.User_ID == userID && user.User_Type==usertype )
+                        loginUser = true;
+                }
+            }
+            catch (ELibraryMgmtSysException)
+            {
+                throw;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            return loginUser;
+        }
+
+
+
+    }
+}
